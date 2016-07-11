@@ -1,0 +1,11 @@
+Original How To: https://github.com/donmelton/video_transcoding
+
+Build with ./build.sh
+Run with ./run.sh <Directory containing video(s)>
+
+Kill with ./kill.sh
+Remove with ./rm.sh
+Watch logs with ./logs
+
+Attach to the running container with ./debug.sh
+Split out the container ID with ./check.sh (This one is also used by some of my other scripts to determine if it is running)
