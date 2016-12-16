@@ -1,0 +1,19 @@
+#Original Doc/How To: https://github.com/donmelton/video_transcoding
+
+#Usual process
+transcode-video --scan
+detect-crop 
+transcode-video --crop detect
+transcode-video --quick --small --mp4 
+convert-video
+
+#First Example split
+ffmpeg -i ORIGINALFILE.mp4 -acodec copy -vcodec copy -ss 0 -t 00:15:00 OUTFILE-1.mp4
+ffmpeg -i ORIGINALFILE.mp4 -acodec copy -vcodec copy -ss 00:15:00 -t 00:15:00 OUTFILE-2.mp4
+ffmpeg -i ORIGINALFILE.mp4 -acodec copy -vcodec copy -ss 00:30:00 -t 00:15:00 OUTFILE-3.mp4
+
+#Second Example Split
+mencoder -ss 01:00:00 -endpos 00:05:56 -oac copy -ovc copy INPUT.mp4 -o OUTPUT1.mp4 && mencoder -ss 01:20:00 -endpos 00:05:56 -oac copy -ovc copy INPUT.mp4 -o OUTPUT2.mp4 && etc...
+
+#Can merge files with this tool easily enough: 
+mkvmerge

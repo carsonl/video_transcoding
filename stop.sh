@@ -34,48 +34,17 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 		fi
 		#Do this for each of them (or the match)
 		#echo Name: ${NAME}, DirName: ${DIRNAME}, Instance: ${INSTANCE:1}, Counter: ${INSTANCECOUNT}.
-		#For builds, we don't actually do anything.
+		DCID=`docker ps -q -a -f name=${NAME}${INSTANCE}$ -f status=running`
+		if [ "${DCID}" != "" ]; then
+			docker stop ${DCID}
+		fi
+		DCID=`docker ps -q -a -f name=${NAME}${INSTANCE}$ -f status=running`
+		if [ "${DCID}" != "" ]; then
+			docker kill ${DCID}
+		fi
 	fi
 done
 if [ "${INSTANCECOUNT}" == "0" ]; then
-	echo ${0}: No instances found, nothing was done. > /dev/null
+	echo ${0}: No instances found, nothing was done. >&2
 fi
 
-cd /u01/repos/srv/docker/${NAME}
-
-if [ -f already-disabled ]; then
-	touch already-already-disabled
-else
-	touch already-disabled
-fi
-
-if [ -f disabled ]; then
-	touch already-disabled
-else
-	touch disabled
-fi
-
-if [ -f $(dirname ${BASH_SOURCE[0]})/build-extra.sh ]; then
-	$(dirname ${BASH_SOURCE[0]})/build-extra.sh ${1}
-fi
-
-if [ "${1}" == "--no-cache" ]; then
-	NOCACHE="--no-cache"
-else
-	NOCACHE=""
-fi
-
-docker build $NOCACHE -t gadjet/${NAME}:latest -t gadjet/${NAME}:`date +%s` .
-
-if [ -f already-disabled ]; then
-	rm already-disabled
-else
-	rm disabled
-fi
-
-if [ -f already-already-disabled ]; then
-	rm already-already-disabled
-	touch already-disabled
-fi
-
-cd -

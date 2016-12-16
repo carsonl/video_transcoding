@@ -24,6 +24,9 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 	fi
 	if [ "${INSTANCE:1}" == "main" ]; then
 		INSTANCE=""
+		if [ "${2}" == "debug" -a "${1}" == "main" ]; then
+			set -- "" "${@:2}"
+		fi
 	fi
 	if [ "${1}" == "${INSTANCE:1}" -o "${1}" == "" -o "${1}" == "debug" ]; then
 		if [ "${1}" == "debug" ]; then
@@ -46,13 +49,17 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 			EXTRA="/bin/bash"
 		else
 			TYPE="-d"
-			if [ "${1}" == "" ]; then
-				EXTRA=""
-			else
-				EXTRA=${1}
-			fi
+			EXTRA=""
 		fi
 
+		DCID=`docker ps -q -a -f name=${NAME}${INSTANCE}$ -f status=running`
+		if [ "${DCID}" != "" ]; then
+			docker stop ${DCID}
+		fi
+		DCID=`docker ps -q -a -f name=${NAME}${INSTANCE}$ -f status=running`
+		if [ "${DCID}" != "" ]; then
+			docker kill ${DCID}
+		fi
 		DCID=`docker ps -q -a -f name=${NAME}${INSTANCE}$ -f status=exited`
 		if [ "${DCID}" != "" ]; then
 			docker rm -v ${DCID}

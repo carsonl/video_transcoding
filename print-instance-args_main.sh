@@ -14,9 +14,6 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 	INSTANCE=`basename $i `   #Just the file
 	INSTANCE=${INSTANCE:20}   #Remove the first 20 chars (print-instance-args_)
 	INSTANCE="_"${INSTANCE:0:-3} #Remove the last  3 chars (.sh)
-	if [ "${1}" == "main" ]; then
-		set -- "" "${@:2}"
-	fi
 	if [ "${INSTANCE:1}" == "main" ]; then
 		INSTANCE=""
 	fi
@@ -25,7 +22,7 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 	else
 		INSTANCECOUNT=` expr ${INSTANCECOUNT} + 1 `
 	fi
-	if [ "${1}" == "${INSTANCE:1}" -o "${1}" == "" ]; then
+	if [ "${1}" == "${INSTANCE:1}" ]; then
 		if [ "${MATCHED}" == "1" ]; then
 			break
 		fi
@@ -34,48 +31,10 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 		fi
 		#Do this for each of them (or the match)
 		#echo Name: ${NAME}, DirName: ${DIRNAME}, Instance: ${INSTANCE:1}, Counter: ${INSTANCECOUNT}.
-		#For builds, we don't actually do anything.
+		echo '--label VPN=false'
+		echo '-v /mnt/mounts/:/mnt/mounts/'
 	fi
 done
 if [ "${INSTANCECOUNT}" == "0" ]; then
-	echo ${0}: No instances found, nothing was done. > /dev/null
+	echo ${0}: No instances found, nothing was done. >&2
 fi
-
-cd /u01/repos/srv/docker/${NAME}
-
-if [ -f already-disabled ]; then
-	touch already-already-disabled
-else
-	touch already-disabled
-fi
-
-if [ -f disabled ]; then
-	touch already-disabled
-else
-	touch disabled
-fi
-
-if [ -f $(dirname ${BASH_SOURCE[0]})/build-extra.sh ]; then
-	$(dirname ${BASH_SOURCE[0]})/build-extra.sh ${1}
-fi
-
-if [ "${1}" == "--no-cache" ]; then
-	NOCACHE="--no-cache"
-else
-	NOCACHE=""
-fi
-
-docker build $NOCACHE -t gadjet/${NAME}:latest -t gadjet/${NAME}:`date +%s` .
-
-if [ -f already-disabled ]; then
-	rm already-disabled
-else
-	rm disabled
-fi
-
-if [ -f already-already-disabled ]; then
-	rm already-already-disabled
-	touch already-disabled
-fi
-
-cd -

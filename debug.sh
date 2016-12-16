@@ -1,12 +1,55 @@
 #!/bin/bash
 
-NAME=`basename $(dirname $0)`
+NAME=`basename $( dirname ${BASH_SOURCE[0]} )`
 if [ "${NAME}" == "." ]; then
 	NAME=`basename $(pwd)`
 fi
-
-if [ "$*" == "" ]; then
-	docker exec -i -t ${NAME} bash
-else
-	docker exec -i -t ${NAME} $*
+DIRNAME=`dirname ${BASH_SOURCE[0]}`
+DIRNAME=`readlink -f ${DIRNAME}`
+if [ "${DIRNAME}" == "." ]; then
+	DIRNAME=`pwd`
+fi
+INSTANCECOUNT=0
+for i in ${DIRNAME}/print-instance-args_*.sh ; do
+	INSTANCE=`basename $i `   #Just the file
+	INSTANCE=${INSTANCE:20}   #Remove the first 20 chars (print-instance-args_)
+	INSTANCE="_"${INSTANCE:0:-3} #Remove the last  3 chars (.sh)
+	if [ "${1}" == "main" ]; then
+		set -- "" "${@:2}"
+	fi
+	if [ "${INSTANCE:1}" == "main" ]; then
+		INSTANCE=""
+	fi
+	if [ "${INSTANCE:1}" == "*" ]; then
+		break;
+	else
+		INSTANCECOUNT=` expr ${INSTANCECOUNT} + 1 `
+	fi
+	if [ "${1}" == "${INSTANCE:1}" ]; then
+		if [ "${MATCHED}" == "1" ]; then
+			break
+		fi
+		if [ "${1}" == "${INSTANCE:1}" ]; then
+			MATCHED=1
+		fi
+		#Do this for each of them (or the match)
+		#echo Name: ${NAME}, DirName: ${DIRNAME}, Instance: ${INSTANCE:1}, Counter: ${INSTANCECOUNT}.
+		shift;
+		if [ -t 1 ]; then
+			PARAMS="-i -t --user root"
+		else
+			PARAMS=""
+		fi
+		if [ "$*" == "" ]; then
+			docker exec ${PARAMS} ${NAME}${INSTANCE} bash
+		else
+			docker exec ${PARAMS} ${NAME}${INSTANCE} $*
+		fi
+	fi
+done
+if [ "${MATCHED}" != "1" ]; then
+	echo ERR: $0: You need to specify an instance name >&2
+fi
+if [ "${INSTANCECOUNT}" == "0" ]; then
+	echo ERR: $0: No instances found, nothing was done. >&2
 fi

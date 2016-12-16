@@ -1,7 +1,9 @@
 Original How To: https://github.com/donmelton/video_transcoding
 
-Build with ./build.sh
-Run with ./run.sh <Directory containing video(s)>
+Modify print-instance-args_main.sh to include a volume where the video content is.
+
+Build with ./build.sh (or rebuild with ./rebuild.sh)
+Run with ./run.sh
 
 Kill with ./kill.sh
 Remove with ./rm.sh

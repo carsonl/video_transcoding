@@ -1,14 +1,10 @@
-FROM		ubuntu:trusty
+FROM		ubuntu:latest
 MAINTAINER	Carson Longhorn <dockerfiles@unrelated.net.au>
-
 ENV		DEBIAN_FRONTEND noninteractive
-COPY		root/running_notes.txt /root/running_notes.txt
-
 RUN		apt-get update && \
 		apt-get -y install \
 			software-properties-common \
 		&& \
-		add-apt-repository ppa:mc3man/trusty-media && \
 		add-apt-repository ppa:stebbins/handbrake-releases && \
 		apt-get update && \
 		apt-get -y install \
@@ -19,10 +15,12 @@ RUN		apt-get update && \
 			mkvtoolnix \
 			mp4v2-utils \
 			mplayer2 \
-			ruby2.0 \
+			ruby \
 			sshfs \
 		&& \
 		apt-get clean && \
-		gem2.0 install video_transcoding
-
+                rm -rf /var/cache/* /var/log/apt/* /tmp/* && \
+		gem install video_transcoding && \
+		echo Finished > /dev/null
+COPY		content/running_notes.txt /root/running_notes.txt
 CMD		/bin/bash
