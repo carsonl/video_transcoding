@@ -20,7 +20,7 @@ RUN		apt-get update && \
 			sshfs \
 		&& \
 		apt-get clean && \
-                rm -rf /var/cache/* /var/log/apt/* /tmp/* && \
+		rm -rf /var/cache/* /var/log/apt/* /tmp/* && \
 		gem install video_transcoding && \
 		echo Finished > /dev/null
 COPY		content/running_notes.txt /root/running_notes.txt
