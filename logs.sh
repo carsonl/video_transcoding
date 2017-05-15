@@ -25,17 +25,18 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 	else
 		INSTANCECOUNT=` expr ${INSTANCECOUNT} + 1 `
 	fi
-	if [ "${1}" == "${INSTANCE:1}" ]; then
+	if [ "${1}" == "${INSTANCE:1}" -o "${1}" == "" ]; then
 		if [ "${MATCHED}" == "1" ]; then
 			break
 		fi
-		if [ "${1}" == "${INSTANCE:1}" ]; then
-			MATCHED=1
-		fi
+		MATCHED=1
 		#Do this for each of them (or the match)
 		#echo Name: ${NAME}, DirName: ${DIRNAME}, Instance: ${INSTANCE:1}, Counter: ${INSTANCECOUNT}.
-		shift;
+		if [ "${1}" == "${INSTANCE:1}" ]; then
+			shift;
+		fi
 		docker logs -f ${NAME}${INSTANCE} --tail ${*:-"100"} 2>&1
+		break
 	fi
 done
 if [ "${MATCHED}" != "1" ]; then

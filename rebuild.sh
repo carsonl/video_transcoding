@@ -10,7 +10,7 @@ if [ "${DIRNAME}" == "." ]; then
 	DIRNAME=`pwd`
 fi
 
-cd /u01/repos/srv/docker/${NAME}
+cd /var/scripts/docker/${NAME}
 
 if [ -f disabled ]; then
 	touch already-disabled
@@ -19,13 +19,13 @@ else
 fi
 
 echo Stopping/Killing/Removing: ${NAME}
-/u01/repos/srv/docker/${NAME}/rm.sh
+/var/scripts/docker/${NAME}/rm.sh
 
 echo Removing existing images for: ${NAME}
 docker images -a --format "{{.Repository}}:{{.Tag}}" gadjet/${NAME} | xargs --no-run-if-empty docker rmi
 
 echo Building: ${NAME}
-/u01/repos/srv/docker/${NAME}/build.sh
+/var/scripts/docker/${NAME}/build.sh
 
 if [ -f already-disabled ]; then
 	rm already-disabled

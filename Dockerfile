@@ -11,6 +11,7 @@ RUN		apt-get update && \
 			ffmpeg \
 			frei0r-plugins \
 			handbrake-cli \
+			mediainfo \
 			mencoder \
 			mkvtoolnix \
 			mp4v2-utils \

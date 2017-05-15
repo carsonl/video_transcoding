@@ -41,7 +41,7 @@ if [ "${INSTANCECOUNT}" == "0" ]; then
 	echo ${0}: No instances found, nothing was done. > /dev/null
 fi
 
-cd /u01/repos/srv/docker/${NAME}
+cd /var/scripts/docker/${NAME}
 
 if [ -f already-disabled ]; then
 	touch already-already-disabled

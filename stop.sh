@@ -34,11 +34,11 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 		fi
 		#Do this for each of them (or the match)
 		#echo Name: ${NAME}, DirName: ${DIRNAME}, Instance: ${INSTANCE:1}, Counter: ${INSTANCECOUNT}.
-		DCID=`docker ps -q -a -f name=${NAME}${INSTANCE}$ -f status=running`
+		DCID=`docker ps -q -a -f name=^/${NAME}${INSTANCE}$ -f status=running`
 		if [ "${DCID}" != "" ]; then
 			docker stop ${DCID}
 		fi
-		DCID=`docker ps -q -a -f name=${NAME}${INSTANCE}$ -f status=running`
+		DCID=`docker ps -q -a -f name=^/${NAME}${INSTANCE}$ -f status=running`
 		if [ "${DCID}" != "" ]; then
 			docker kill ${DCID}
 		fi

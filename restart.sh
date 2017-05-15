@@ -49,27 +49,35 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 			EXTRA="/bin/bash"
 		else
 			TYPE="-d"
-			EXTRA=""
+			if [ "${1}" == "" ]; then
+				EXTRA=""
+			else
+				EXTRA=${1}
+			fi
+			POTEXTRA=`tail -1 ${DIRNAME}/print-instance-args${INSTANCE:-"_main"}.sh | grep '^#EXTRA Run: ' | sed 's/^#EXTRA Run: //g'`
+			if [ "${POTEXTRA}" != "" ]; then
+				EXTRA=${POTEXTRA}
+			fi
 		fi
 
-		DCID=`docker ps -q -a -f name=${NAME}${INSTANCE}$ -f status=running`
+		DCID=`docker ps -q -a -f name=^/${NAME}${INSTANCE}$ -f status=running`
 		if [ "${DCID}" != "" ]; then
 			docker stop ${DCID}
 		fi
-		DCID=`docker ps -q -a -f name=${NAME}${INSTANCE}$ -f status=running`
+		DCID=`docker ps -q -a -f name=^/${NAME}${INSTANCE}$ -f status=running`
 		if [ "${DCID}" != "" ]; then
 			docker kill ${DCID}
 		fi
-		DCID=`docker ps -q -a -f name=${NAME}${INSTANCE}$ -f status=exited`
+		DCID=`docker ps -q -a -f name=^/${NAME}${INSTANCE}$ -f status=exited`
 		if [ "${DCID}" != "" ]; then
 			docker rm -v ${DCID}
 		fi
-		DCID=`docker ps -q -a -f name=${NAME}${INSTANCE}$ -f status=created`
+		DCID=`docker ps -q -a -f name=^/${NAME}${INSTANCE}$ -f status=created`
 		if [ "${DCID}" != "" ]; then
 			docker rm -v ${DCID}
 		fi
 
-		DCID=`docker ps -q -a -f name=${NAME}${INSTANCE}$`
+		DCID=`docker ps -q -a -f name=^/${NAME}${INSTANCE}$`
 		if [ "${DCID}" != "" ]; then
 			echo WARN ${0}: ${NAME}${INSTANCE} is already running, nothing was done. >&2
 		else
@@ -81,7 +89,7 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 				\
 				gadjet/${NAME}:latest \
 				${EXTRA}
-			docker ps -a -f name=${NAME}${INSTANCE}$
+			docker ps -a -f name=^/${NAME}${INSTANCE}$
 		fi
 	fi
 done
