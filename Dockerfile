@@ -15,7 +15,7 @@ RUN		apt-get update && \
 			mencoder \
 			mkvtoolnix \
 			mp4v2-utils \
-			mplayer2 \
+			mplayer \
 			rename \
 			ruby \
 			sshfs \
