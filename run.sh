@@ -24,6 +24,9 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 	fi
 	if [ "${INSTANCE:1}" == "main" ]; then
 		INSTANCE=""
+		if [ "${2}" == "debug" -a "${1}" == "main" ]; then
+			set -- "" "${@:2}"
+		fi
 	fi
 	if [ "${1}" == "${INSTANCE:1}" -o "${1}" == "" -o "${1}" == "debug" ]; then
 		if [ "${1}" == "debug" ]; then
@@ -42,7 +45,11 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 		if [ "${1}" == "debug" ]; then
 			MATCHED=1
 			shift;
-			TYPE="-i -t"
+			if [ -t 1 ]; then
+				TYPE="-i -t"
+			else
+				TYPE="-i"
+			fi
 			if [ "${1}" == "" ]; then
 				EXTRA="/bin/bash"
 			else
@@ -57,7 +64,13 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 			fi
 			POTEXTRA=`tail -1 ${DIRNAME}/print-instance-args${INSTANCE:-"_main"}.sh | grep '^#EXTRA Run: ' | sed 's/^#EXTRA Run: //g'`
 			if [ "${POTEXTRA}" != "" ]; then
-				EXTRA=${POTEXTRA}
+				if [ "${POTEXTRA}" == "-it" ]; then
+					if [ -t 1 ]; then
+						TYPE="-i -t"
+					fi
+				else
+					EXTRA=${POTEXTRA}
+				fi
 			fi
 		fi
 

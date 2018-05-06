@@ -45,18 +45,32 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 		if [ "${1}" == "debug" ]; then
 			MATCHED=1
 			shift;
-			TYPE="-i -t"
-			EXTRA="/bin/bash"
+			if [ -t 1 ]; then
+				TYPE="-i -t"
+			else
+				TYPE="-i"
+			fi
+			if [ "${1}" == "" ]; then
+				EXTRA="/bin/bash"
+			else
+				EXTRA=$*
+			fi
 		else
 			TYPE="-d"
 			if [ "${1}" == "" ]; then
 				EXTRA=""
 			else
-				EXTRA=${1}
+				EXTRA=$*
 			fi
 			POTEXTRA=`tail -1 ${DIRNAME}/print-instance-args${INSTANCE:-"_main"}.sh | grep '^#EXTRA Run: ' | sed 's/^#EXTRA Run: //g'`
 			if [ "${POTEXTRA}" != "" ]; then
-				EXTRA=${POTEXTRA}
+				if [ "${POTEXTRA}" == "-it" ]; then
+					if [ -t 1 ]; then
+						TYPE="-i -t"
+					fi
+				else
+					EXTRA=${POTEXTRA}
+				fi
 			fi
 		fi
 
@@ -79,24 +93,23 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 
 		DCID=`docker ps -q -a -f name=^/${NAME}${INSTANCE}$`
 		if [ "${DCID}" != "" ]; then
-			echo WARN ${0}: ${NAME}${INSTANCE} is already running, nothing was done. >&2
+			echo WARN ${0}: ${NAME}${INSTANCE} is already running, nothing was 'done'. >&2
 		else
-			docker run \
+			#Replace spaces in quoted strings with escaped spaces
+			PRINTVAR=$( eval echo `${DIRNAME}/print-instance-args${INSTANCE:-"_main"}.sh ${INSTANCE:1} ` | perl -pe 's:"[^"]*":($x=$&)=~s/ /\\ /g;$x:ge' )
+			eval `echo docker run \
 				--name ${NAME}${INSTANCE} \
 				${TYPE} \
 				\
-				` ${DIRNAME}/print-instance-args${INSTANCE:-"_main"}.sh ${INSTANCE:1} ` \
+				${PRINTVAR} \
 				\
 				gadjet/${NAME}:latest \
-				${EXTRA}
+				${EXTRA} \
+				`
 			docker ps -a -f name=^/${NAME}${INSTANCE}$
 		fi
 	fi
 done
 if [ "${INSTANCECOUNT}" == "0" ]; then
-	echo ${0}: No instances found, nothing was done. >&2
+	echo ${0}: No instances found, nothing was 'done'. >&2
 fi
-
-
-
-

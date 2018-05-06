@@ -16,6 +16,7 @@ RUN		apt-get update && \
 			mkvtoolnix \
 			mp4v2-utils \
 			mplayer2 \
+			rename \
 			ruby \
 			sshfs \
 		&& \

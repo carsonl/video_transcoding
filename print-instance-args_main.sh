@@ -31,6 +31,7 @@ for i in ${DIRNAME}/print-instance-args_*.sh ; do
 		fi
 		#Do this for each of them (or the match)
 		#echo Name: ${NAME}, DirName: ${DIRNAME}, Instance: ${INSTANCE:1}, Counter: ${INSTANCECOUNT}.
+		echo '--init'
 		echo '--label VPN=false'
 		echo '-v /mnt/mounts/:/mnt/mounts/'
 	fi
@@ -38,3 +39,4 @@ done
 if [ "${INSTANCECOUNT}" == "0" ]; then
 	echo ${0}: No instances found, nothing was done. >&2
 fi
+#EXTRA Run: -it
