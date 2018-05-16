@@ -10,6 +10,7 @@ RUN		apt-get update && \
 		apt-get -y install \
 			ffmpeg \
 			frei0r-plugins \
+			gawk \
 			handbrake-cli \
 			mediainfo \
 			mencoder \
