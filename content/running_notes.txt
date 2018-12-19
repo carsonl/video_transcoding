@@ -17,3 +17,5 @@ mencoder -ss 01:00:00 -endpos 00:05:56 -oac copy -ovc copy INPUT.mp4 -o OUTPUT1.
 
 #Can merge files with this tool easily enough: 
 mkvmerge
+
+#Includes a few other tools not mentioned here.
